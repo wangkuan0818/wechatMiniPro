@@ -10,4 +10,31 @@
   <view class="usermotto">
     <text class="user-motto">{{motto}}</text>
   </view>
+  <view>
+      <van-cell-group>
+          <van-field
+                  value="{{ username }}"
+                  required
+                  clearable
+                  label="用户名"
+                  icon="question"
+                  placeholder="请输入用户名"
+                  bind:change="onInput"
+          />
+      </van-cell-group>
+      <van-button type="primary" bindtap="clinckDialog">随便弹个窗</van-button>
+      <van-cell title="单元格" value="内容" is-link bindtap="click"/>
+      <van-radio-group value="{{ radio }}" bind:change="onChange">
+        <van-radio name="1">单选框 1</van-radio>
+        <van-radio name="2">单选框 2</van-radio>
+      </van-radio-group>
+  </view>
+  <van-dialog
+          id="van-dialog"
+          show="{{ show }}"
+          title="强制你授权"
+          message="气不气？"
+          confirm-button-open-type="getUserInfo"
+          bind:getuserinfo="getInfo"
+  />
 </view>

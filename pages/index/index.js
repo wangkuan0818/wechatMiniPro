@@ -2,6 +2,7 @@
 
 import wxRequest from '../../utils/request_main'
 import api from '../../utils/request'
+import Dialog from "../../miniprogram_npm/vant-weapp/dialog/dialog"
 
 //获取应用实例
 const app = getApp()
@@ -11,7 +12,10 @@ Page({
     motto: 'Hello World',
     userInfo: {},
     hasUserInfo: false,
-    canIUse: wx.canIUse('button.open-type.getUserInfo')
+    canIUse: wx.canIUse('button.open-type.getUserInfo'),
+    radio: '1', // 复选框默认属性
+    username: 'wangkuan', // 表单内容
+    show: false, // 是否显示弹出框
   },
   //事件处理函数
   bindViewTap: function() {
@@ -20,7 +24,7 @@ Page({
     })
   },
   onLoad: function () {
-
+console.log(app.globalData.userInfo, 'userInfo')
     // 使用第三方封装
     // wxRequest.get('https://api.it120.cc/common/mobile-segment/location?mobile=17512044201')
     // .then(function (response) {
@@ -31,12 +35,19 @@ Page({
     // })
 
     if (app.globalData.userInfo) {
+      console.log(1)
       this.setData({
         userInfo: app.globalData.userInfo,
         hasUserInfo: true
       })
       this.getData()
     } else if (this.data.canIUse){
+      console.log(2, app.userInfoReadyCallback)
+      // if (!this.hasUserInfo) {
+      //   this.setData({
+      //     show: true,
+      //   })
+      // }
       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
       // 所以此处加入 callback 以防止这种情况
       app.userInfoReadyCallback = res => {
@@ -46,6 +57,7 @@ Page({
         })
       }
     } else {
+      console.log(3)
       // 在没有 open-type=getUserInfo 版本的兼容处理
       wx.getUserInfo({
         success: res => {
@@ -82,8 +94,51 @@ Page({
       console.log(e)
     })
   },
-  getUserInfo: function(e) {
+  clinckDialog: function() {
+    Dialog.confirm({
+      title: '标题',
+      message: '弹个窗~'
+    }).then(() => {
+      // on confirm
+    }).catch(() => {
+      // on cancel
+    })
+  },
+  // 有赞UI列表点击事件
+  click: function() {
+    console.log('click')
+  },
+  // 有赞UI复选框改变事件
+  onChange: function(event) {
+    this.setData({
+      radio: event.detail,
+    })
+  },
+  // input改变事件
+  onInput: function(event) {
+    this.setData({
+      username: event.detail,
+    })
+  },
+  // 强制授权，牛皮哄哄
+  getInfo: function(e) {
     console.log(e)
+    if (e.detail.userInfo) {
+      this.getUserInfo(e)
+      // 异步关闭弹窗
+      setTimeout(() => {
+        this.setData({
+          show: false
+        })
+      }, 1000)
+    } else {
+      this.setData({
+        show: true
+      })
+    }
+  },
+  getUserInfo: function(e) {
+    console.log(e, 'e')
     app.globalData.userInfo = e.detail.userInfo
     this.setData({
       userInfo: e.detail.userInfo,
