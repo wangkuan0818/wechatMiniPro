@@ -24,7 +24,6 @@ Page({
     })
   },
   onLoad: function () {
-console.log(app.globalData.userInfo, 'userInfo')
     // 使用第三方封装
     // wxRequest.get('https://api.it120.cc/common/mobile-segment/location?mobile=17512044201')
     // .then(function (response) {
@@ -35,29 +34,33 @@ console.log(app.globalData.userInfo, 'userInfo')
     // })
 
     if (app.globalData.userInfo) {
-      console.log(1)
       this.setData({
         userInfo: app.globalData.userInfo,
         hasUserInfo: true
       })
       this.getData()
     } else if (this.data.canIUse){
-      console.log(2, app.userInfoReadyCallback)
-      // if (!this.hasUserInfo) {
-      //   this.setData({
-      //     show: true,
-      //   })
-      // }
       // 由于 getUserInfo 是网络请求，可能会在 Page.onLoad 之后才返回
       // 所以此处加入 callback 以防止这种情况
       app.userInfoReadyCallback = res => {
         this.setData({
           userInfo: res.userInfo,
-          hasUserInfo: true
+          hasUserInfo: true,
+          show: false
+        })
+      }
+      // 还是会一闪而过
+      /**
+       *@desc 原因：getUserInfo回来之前先触发了true
+       *@author wangkuan
+       *@date 2018/12/4
+       */
+      if (!this.hasUserInfo) {
+        this.setData({
+          show: true
         })
       }
     } else {
-      console.log(3)
       // 在没有 open-type=getUserInfo 版本的兼容处理
       wx.getUserInfo({
         success: res => {
@@ -69,6 +72,14 @@ console.log(app.globalData.userInfo, 'userInfo')
         }
       })
     }
+    // if (!app.globalData.isAuth) {
+    //   this.setData({
+    //     show: true
+    //   })
+    // }
+  },
+  onShow: function() {
+
   },
   getData: function() {
     // 普通封装
@@ -139,11 +150,17 @@ console.log(app.globalData.userInfo, 'userInfo')
   },
   getUserInfo: function(e) {
     console.log(e, 'e')
-    app.globalData.userInfo = e.detail.userInfo
-    this.setData({
-      userInfo: e.detail.userInfo,
-      hasUserInfo: true
-    })
-    this.getData()
+    if (e.detail.userInfo) {
+      app.globalData.userInfo = e.detail.userInfo
+      this.setData({
+        userInfo: e.detail.userInfo,
+        hasUserInfo: true
+      })
+      this.getData()
+    } else {
+      this.setData({
+        show: true
+      })
+    }
   }
 })
